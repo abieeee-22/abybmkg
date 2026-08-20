@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>AbyBMKG • Info Gempa Terkini</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --bmkg-navy: #0a2a4a;
+      --bmkg-blue: #1e5799;
+      --bmkg-lightblue: #4a90d9;
+      --bmkg-orange: #f58220;
+      --bmkg-red: #d32f2f;
+      --bmkg-gray: #5c6b7a;
+      --bg-dark: #0a1a2f;
+      --card-bg: #0d2540;
+      --surface: #103356;
+      --text-white: #f0f4f8;
+      --text-soft: #c5d3e8;
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', 'Segoe UI', 'Roboto', system-ui, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a1a2f 0%, #0d2540 40%, #1a3a5c 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    .quake-dashboard {
+      width: 100%;
+      max-width: 640px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 2.2rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: var(--shadow-lg);
+      padding: 1.8rem 1.8rem 2rem;
+      color: var(--text-white);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quake-dashboard::before {
+      content: "";
+      position: absolute;
+      top: -15%;
+      right: -10%;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(245, 130, 32, 0.08) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .quake-dashboard::after {
+      content: "";
+      position: absolute;
+      bottom: -20%;
+      left: -15%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(74, 144, 217, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* HEADER */
+    .header-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-bottom: 1.6rem;
+      border-bottom: 2px solid rgba(245, 130, 32, 0.5);
+      padding-bottom: 1rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .brand-icon {
+      background: linear-gradient(145deg, #f58220, #d4691a);
+      width: 50px;
+      height: 50px;
+      border-radius: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(245, 130, 32, 0.35);
+    }
+
+    .brand-text {
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: -0.8px;
+      line-height: 1.1;
+      color: #ffffff;
+    }
+
+    .brand-text small {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      color: var(--bmkg-orange);
+      text-transform: uppercase;
+    }
+
+    .official-badge {
+      background: rgba(74, 144, 217, 0.2);
+      border: 1px solid rgba(74, 144, 217, 0.6);
+      padding: 0.4rem 1.2rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      font-size: 0.7rem;
+      letter-spacing: 0.5px;
+      color: #a8c8e8;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .official-badge i {
+      color: var(--bmkg-lightblue);
+    }
+
+    /* ACTION ROW */
+    .action-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .refresh-btn {
+      background: rgba(74, 144, 217, 0.15);
+      border: 1px solid rgba(74, 144, 217, 0.5);
+      color: #b0d0f0;
+      padding: 0.7rem 1.5rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      letter-spacing: 0.3px;
+    }
+
+    .refresh-btn:hover {
+      background: rgba(74, 144, 217, 0.25);
+      border-color: rgba(74, 144, 217, 0.8);
+      transform: translateY(-1px);
+    }
+
+    .refresh-btn i {
+      font-size: 0.9rem;
+      color: var(--bmkg-orange);
+    }
+
+    .update-time {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .update-time i {
+      color: var(--bmkg-orange);
+    }
+
+    /* STATUS BAR */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      font-size: 0.75rem;
+      color: var(--text-soft);
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .server-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #0a1a2f;
+      padding: 0.3rem 1rem;
+      border-radius: 3rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .status-badge i {
+      font-size: 1rem;
+    }
+
+    .status-on {
+      color: #4ade80;
+    }
+    .status-off {
+      color: #f87171;
+    }
+
+    .dot-live {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 10px #4ade80;
+      transition: 0.3s;
+    }
+
+    /* LOADING */
+    .loading-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+      gap: 1rem;
+      min-height: 280px;
+      background: #0d2540;
+      border-radius: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      z-index: 2;
+    }
+
+    .spinner-professional {
+      width: 70px;
+      height: 70px;
+      border: 6px solid rgba(74, 144, 217, 0.2);
+      border-top: 6px solid var(--bmkg-orange);
+      border-radius: 50%;
+      animation: spin 0.9s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite;
+      box-shadow: 0 0 30px rgba(245, 130, 32, 0.25);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      color: #c5d3e8;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .loading-text i {
+      color: var(--bmkg-orange);
+      animation: pulse-icon 1.2s infinite;
+    }
+
+    @keyframes pulse-icon {
+      0%,100% { opacity: 0.7; }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    /* ERROR */
+    .error-panel {
+      background: rgba(200, 70, 70, 0.2);
+      border-left: 5px solid #e94f4f;
+      color: #ffd7d7;
+      padding: 1rem 1.3rem;
+      border-radius: 1.2rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      display: none;
+      backdrop-filter: blur(8px);
+      align-items: center;
+      gap: 0.7rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .error-panel i {
+      color: #ff8a8a;
+    }
+
+    /* HASIL GEMPA */
+    .quake-result-panel {
+      background: #0d2540;
+      border-radius: 2rem;
+      padding: 1.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 2;
+    }
+
+    .magnitude-section {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .magnitude-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #1e5799, #0a2a4a);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(245, 130, 32, 0.3);
+      border: 3px solid var(--bmkg-orange);
+    }
+
+    .magnitude-value {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    .magnitude-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-soft);
+    }
+
+    .main-info {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .location-text {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+      margin-bottom: 0.4rem;
+    }
+
+    .waktu-text {
+      font-size: 0.9rem;
+      color: #c5d3e8;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .waktu-text i {
+      color: var(--bmkg-orange);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-item {
+      background: #103356;
+      padding: 1rem;
+      border-radius: 1.2rem;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .info-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(74, 144, 217, 0.2);
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--bmkg-lightblue);
+      flex-shrink: 0;
+    }
+
+    .info-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #a0b8d0;
+      margin-bottom: 0.2rem;
+    }
+
+    .info-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .potensi-section {
+      background: rgba(245, 130, 32, 0.15);
+      border-left: 4px solid var(--bmkg-orange);
+      padding: 1rem 1.2rem;
+      border-radius: 1rem;
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .potensi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--bmkg-orange);
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .potensi-text {
+      color: #f0d0b0;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .dirasakan-section {
+      margin-top: 1rem;
+    }
+
+    .dirasakan-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-soft);
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .dirasakan-text {
+      color: #c5d3e8;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .peta-section {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    .peta-image {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 1.2rem;
+      border: 2px solid rgba(74, 144, 217, 0.4);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .peta-image:hover {
+      transform: scale(1.01);
+      border-color: var(--bmkg-orange);
+    }
+
+    .peta-link {
+      display: inline-block;
+      margin-top: 0.5rem;
+      color: var(--bmkg-lightblue);
+      font-size: 0.8rem;
+      text-decoration: none;
+    }
+
+    .peta-link:hover {
+      text-decoration: underline;
+    }
+
+    .watermark {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.7rem;
+      opacity: 0.5;
+      letter-spacing: 0.8px;
+      font-weight: 300;
+      pointer-events: none;
+      color: var(--text-soft);
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 480px) {
+      .quake-dashboard {
+        padding: 1.3rem 1rem;
+        border-radius: 1.8rem;
+      }
+      .magnitude-circle {
+        width: 90px;
+        height: 90px;
+      }
+      .magnitude-value {
+        font-size: 2rem;
+      }
+      .brand-text {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="quake-dashboard">
+    <!-- HEADER -->
+    <div class="header-section">
+      <div class="brand-area">
+        <div class="brand-icon"><i class="fas fa-house-crack"></i></div>
+        <div class="brand-text">AbyBMKG <small>AB • official</small></div>
+      </div>
+      <div class="official-badge"><i class="fas fa-shield-halved"></i> BMKG</div>
+    </div>
+
+    <!-- ACTION ROW -->
+    <div class="action-row">
+      <button class="refresh-btn" id="refreshBtn"><i class="fas fa-rotate-right"></i> Muat Ulang</button>
+      <div class="update-time" id="updateTime"><i class="fas fa-clock"></i> <span>Memuat...</span></div>
+    </div>
+
+    <!-- STATUS SERVER -->
+    <div class="status-bar">
+      <div class="server-status" id="serverStatusBox">
+        <div class="status-badge">
+          <i class="fas fa-server" id="serverIcon"></i>
+          <span id="statusText">Server: memeriksa...</span>
+          <div class="dot-live" id="statusDot"></div>
+        </div>
+      </div>
+      <div class="copyright"><i class="fas fa-copyright"></i> AWH 2025</div>
+    </div>
+
+    <!-- ERROR PANEL -->
+    <div class="error-panel" id="errorPanel">
+      <i class="fas fa-triangle-exclamation"></i>
+      <span id="errorMessage">Gagal memuat data.</span>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-wrapper" id="loadingWrapper">
+      <div class="spinner-professional"></div>
+      <div class="loading-text"><i class="fas fa-sync-alt"></i> Mengambil data gempa terbaru...</div>
+    </div>
+
+    <!-- HASIL GEMPA -->
+    <div class="quake-result-panel" id="quakeResult" style="display: none;">
+      <div class="magnitude-section">
+        <div class="magnitude-circle">
+          <div class="magnitude-value" id="displayMagnitude">4.2</div>
+          <div class="magnitude-label">Magnitudo</div>
+        </div>
+        <div class="main-info">
+          <div class="location-text" id="displayLocation">Pusat gempa berada di laut 80 km Barat Daya Kab. Pangandaran</div>
+          <div class="waktu-text"><i class="fas fa-clock"></i> <span id="displayWaktu">20 Agu 2026 21:31:33 WIB</span></div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-icon"><i class="fas fa-arrow-down"></i></div>
+          <div class="info-content">
+            <div class="info-label">Kedalaman</div>
+            <div class="info-value" id="displayKedalaman">17 km</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon"><i class="fas fa-location-dot"></i></div>
+          <div class="info-content">
+            <div class="info-label">Koordinat</div>
+            <div class="info-value" id="displayKoordinat">-8.09,107.88</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="potensi-section">
+        <div class="potensi-label"><i class="fas fa-circle-exclamation"></i> Potensi</div>
+        <div class="potensi-text" id="displayPotensi">Gempa ini dirasakan untuk diteruskan pada masyarakat</div>
+      </div>
+
+      <div class="dirasakan-section">
+        <div class="dirasakan-label">Dirasakan di:</div>
+        <div class="dirasakan-text" id="displayDirasakan">III Pangandaran, III Kalapanunggal, III Ciamis, III Pameungpeuk</div>
+      </div>
+
+      <div class="peta-section">
+        <img class="peta-image" id="displayPeta" src="https://data.bmkg.go.id/DataMKG/TEWS/20260820213133.mmi.jpg" alt="Peta Gempa" />
+        <a class="peta-link" id="petaLink" href="https://data.bmkg.go.id/DataMKG/TEWS/20260820213133.mmi.jpg" target="_blank"><i class="fas fa-up-right-from-square"></i> Lihat peta penuh</a>
+      </div>
+    </div>
+
+    <div class="watermark"><i class="fas fa-lock"></i> secure endpoint • data.bmkg.go.id</div>
+  </div>
+
+  <script>
+    (function() {
+      const API_ENDPOINT = "https://api.theresav.biz.id/info/cekgempa";
+      const API_KEY = "hBvyU";
+
+      const loadingWrapper = document.getElementById('loadingWrapper');
+      const quakeResult = document.getElementById('quakeResult');
+      const errorPanel = document.getElementById('errorPanel');
+      const errorMessage = document.getElementById('errorMessage');
+      const serverIcon = document.getElementById('serverIcon');
+      const statusText = document.getElementById('statusText');
+      const statusDot = document.getElementById('statusDot');
+      const updateTime = document.getElementById('updateTime');
+      const refreshBtn = document.getElementById('refreshBtn');
+
+      const displayMagnitude = document.getElementById('displayMagnitude');
+      const displayLocation = document.getElementById('displayLocation');
+      const displayWaktu = document.getElementById('displayWaktu');
+      const displayKedalaman = document.getElementById('displayKedalaman');
+      const displayKoordinat = document.getElementById('displayKoordinat');
+      const displayPotensi = document.getElementById('displayPotensi');
+      const displayDirasakan = document.getElementById('displayDirasakan');
+      const displayPeta = document.getElementById('displayPeta');
+      const petaLink = document.getElementById('petaLink');
+
+      function setServerStatus(isOnline, msg = '') {
+        if (isOnline) {
+          serverIcon.className = 'fas fa-server status-on';
+          statusText.innerText = msg || 'Server: online';
+          statusDot.style.background = '#4ade80';
+          statusDot.style.boxShadow = '0 0 12px #4ade80';
+        } else {
+          serverIcon.className = 'fas fa-server status-off';
+          statusText.innerText = msg || 'Server: offline';
+          statusDot.style.background = '#f87171';
+          statusDot.style.boxShadow = '0 0 12px #f87171';
+        }
+      }
+
+      function showLoading() {
+        loadingWrapper.style.display = 'flex';
+        quakeResult.style.display = 'none';
+        errorPanel.style.display = 'none';
+      }
+
+      function showError(msg) {
+        loadingWrapper.style.display = 'none';
+        quakeResult.style.display = 'none';
+        errorPanel.style.display = 'flex';
+        errorMessage.innerText = msg;
+        setServerStatus(false, 'Server: offline (gagal)');
+      }
+
+      function showResult() {
+        loadingWrapper.style.display = 'none';
+        errorPanel.style.display = 'none';
+        quakeResult.style.display = 'block';
+      }
+
+      function renderData(data) {
+        displayMagnitude.innerText = data.magnitude || '--';
+        displayLocation.innerText = data.lokasi || 'Tidak tersedia';
+        displayWaktu.innerText = data.waktu || 'Waktu tidak tersedia';
+        displayKedalaman.innerText = data.kedalaman || '--';
+        displayKoordinat.innerText = data.koordinat || '--';
+        displayPotensi.innerText = data.potensi || '--';
+        displayDirasakan.innerText = data.dirasakan || '--';
+        
+        if (data.peta) {
+          displayPeta.src = data.peta;
+          petaLink.href = data.peta;
+        }
+
+        showResult();
+        setServerStatus(true, 'Server: online • data tersedia');
+      }
+
+      async function fetchQuake() {
+        showLoading();
+        setServerStatus(true, 'Server: online • memuat...');
+        updateTime.innerHTML = '<i class="fas fa-clock"></i> <span>Memuat...</span>';
+
+        try {
+          const response = await fetch(`${API_ENDPOINT}?apikey=${API_KEY}`, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+          });
+
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+          const data = await response.json();
+          if (!data.status || !data.result) {
+            throw new Error('Struktur data tidak valid');
+          }
+
+          renderData(data.result);
+          updateTime.innerHTML = `<i class="fas fa-clock"></i> <span>Update terakhir: ${new Date().toLocaleTimeString('id-ID')}</span>`;
+        } catch (err) {
+          console.error(err);
+          showError(`Gagal memuat data gempa: ${err.message}`);
+          updateTime.innerHTML = '<i class="fas fa-clock"></i> <span>Gagal memperbarui</span>';
+        }
+      }
+
+      refreshBtn.addEventListener('click', () => {
+        fetchQuake();
+      });
+
+      window.addEventListener('load', () => {
+        fetchQuake();
+      });
+    })();
+  </script>
+</body>
+</html>
